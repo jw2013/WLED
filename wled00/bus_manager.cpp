@@ -174,6 +174,7 @@ void BusDigital::setBrightness(uint8_t b) {
   PolyBus::setBrightness(_busPtr, _iType, b);
 
   if (_buffering) return;
+  if (prevBri < b) return; // only repaint immediately if brightness decreases
 
   // must update/repaint every LED in the NeoPixelBus buffer to the new brightness
   // the only case where repainting is unnecessary is when all pixels are set after the brightness change but before the next show

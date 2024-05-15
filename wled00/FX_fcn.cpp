@@ -1337,17 +1337,18 @@ void WS2812FX::show(void) {
   if (callback) callback();
 
   uint8_t newBri = estimateCurrentAndLimitBri();
-  busses.setBrightness(newBri); // "repaints" all pixels if brightness changed
+  if (newBri < _brightness) {
+    busses.setBrightness(newBri); // "repaints" all pixels if brightness changed
+  }
+  else {
+  // restore bus brightness to its original value
+    busses.setBrightness(_brightness);
+  }
 
   // some buses send asynchronously and this method will return before
   // all of the data has been sent.
   // See https://github.com/Makuna/NeoPixelBus/wiki/ESP32-NeoMethods#neoesp32rmt-methods
   busses.show();
-
-  // restore bus brightness to its original value
-  // this is done right after show, so this is only OK if LED updates are completed before show() returns
-  // or async show has a separate buffer (ESP32 RMT and I2S are ok)
-  if (newBri < _brightness) busses.setBrightness(_brightness);
 
   unsigned long showNow = millis();
   size_t diff = showNow - _lastShow;
