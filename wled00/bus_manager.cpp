@@ -702,9 +702,7 @@ Bus* createUserbus(BusConfig &bc);
 
 int BusManager::add(BusConfig &bc) {
   if (getNumBusses() - getNumVirtualBusses() >= WLED_MAX_BUSSES) return -1;
-  if ( (bc.type >= TYPE_USERBUS_MIN) && (bc.type <= TYPE_USERBUS_MAX) ) {
-    Bus* userbus = createUserbus(bc);
-    if ( !userbus ) return -1;
+  if ( Bus* userbus = createUserbus(bc) ) {
     busses[numBusses] = userbus;
   } else if (Bus::isVirtual(bc.type)) {
     busses[numBusses] = new BusNetwork(bc);
