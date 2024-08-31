@@ -328,6 +328,10 @@
 #define TYPE_NET_ARTNET_RGBW     89            //network ArtNet RGB bus (master broadcast bus, unused)
 #define TYPE_VIRTUAL_MAX         95
 
+#define TYPE_USERBUS_MIN         112
+#define TYPE_USERBUS_MAX         127
+
+
 /*
 // old macros that have been moved to Bus class
 #define IS_TYPE_VALID(t) ((t) > 15 && (t) < 128)

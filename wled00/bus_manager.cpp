@@ -697,9 +697,16 @@ uint32_t BusManager::memUsage(unsigned maxChannels, unsigned maxCount, unsigned 
   return (maxChannels * maxCount * minBuses * multiplier);
 }
 
+//userbusses_list.cpp
+Bus* createUserbus(BusConfig &bc);
+
 int BusManager::add(BusConfig &bc) {
   if (getNumBusses() - getNumVirtualBusses() >= WLED_MAX_BUSSES) return -1;
-  if (Bus::isVirtual(bc.type)) {
+  if ( (bc.type >= TYPE_USERBUS_MIN) && (bc.type <= TYPE_USERBUS_MAX) ) {
+    Bus* userbus = createUserbus(bc);
+    if ( !userbus ) return -1;
+    busses[numBusses] = userbus;
+  } else if (Bus::isVirtual(bc.type)) {
     busses[numBusses] = new BusNetwork(bc);
   } else if (Bus::isDigital(bc.type)) {
     busses[numBusses] = new BusDigital(bc, numBusses, colorOrderMap);
@@ -710,6 +717,8 @@ int BusManager::add(BusConfig &bc) {
   }
   return numBusses++;
 }
+
+void addUserbusTypesJSONString(String &json);
 
 // idea by @netmindz https://github.com/Aircoookie/WLED/pull/4056
 String BusManager::getLEDTypesJSONString(void) {
@@ -764,6 +773,7 @@ String BusManager::getLEDTypesJSONString(void) {
       + F(",t:\"") + FPSTR(type.type)
       + F("\",n:\"") + FPSTR(type.name) + F("\"},");
   }
+  addUserbusTypesJSONString(json);
   json.setCharAt(json.length()-1, ']'); // replace last comma with bracket
   return json;
 }
